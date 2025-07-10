@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Box, TextField, Typography, Paper } from "@mui/material";
+import { Typography, Paper } from "@mui/material";
 import CustomButton from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import styles from "../style.module.css";
+import Input from "@/components/ui/Input";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -41,7 +42,7 @@ export default function RegisterForm() {
           Book Management Register
         </Typography>
 
-        <TextField
+        <Input
           label="Username"
           name="username"
           value={formData.username}
@@ -50,7 +51,7 @@ export default function RegisterForm() {
           helperText={errors.username}
         />
 
-        <TextField
+        <Input
           label="Password"
           name="password"
           type="password"

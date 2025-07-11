@@ -1,37 +1,61 @@
 "use client";
+
 import React, { useState } from "react";
-import { Typography, Paper } from "@mui/material";
+import { Typography, Alert, Box, CircularProgress, Link } from "@mui/material";
 import CustomButton from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import styles from "../style.module.css";
 import Input from "@/components/ui/Input";
+import { CREATE_USER } from "@/graphql/user/mutation";
+import { useMutation } from "@apollo/client";
 
 export default function RegisterForm() {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
   const router = useRouter();
+
+  const [createUser, { loading }] = useMutation(CREATE_USER);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: null });
+    setServerError(null);
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = "Username is required.";
+    if (!formData.email) newErrors.email = "email is required.";
     if (!formData.password) newErrors.password = "Password is required.";
     else if (formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters.";
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log("Login success", formData);
-      router.push("/dashboard"); // or your home page
+      try {
+        const { data } = await createUser({
+          variables: {
+            createUserInput: {
+              email: formData.email,
+              password: formData.password,
+            },
+          },
+        });
+
+        if (data.createUser.token) {
+          sessionStorage.setItem("TKN", data.createUser.token);
+        }
+        router.push("/book-list");
+      } catch (error) {
+        console.error(error);
+        setServerError("Registration failed. Please try again.");
+      }
     }
   };
 
@@ -42,13 +66,20 @@ export default function RegisterForm() {
           Book Management Register
         </Typography>
 
+        {serverError && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            {serverError}
+          </Alert>
+        )}
+
         <Input
-          label="Username"
-          name="username"
-          value={formData.username}
+          label="email"
+          name="email"
+          type="email"
+          value={formData.email}
           onChange={handleChange}
-          error={Boolean(errors.username)}
-          helperText={errors.username}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
         />
 
         <Input
@@ -61,7 +92,30 @@ export default function RegisterForm() {
           helperText={errors.password}
         />
 
-        <CustomButton name="Login" type="submit" onClick={handleSubmit} />
+        <Box sx={{ mt: 2 }}>
+          <CustomButton
+            name={
+              loading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                "Register"
+              )
+            }
+            type="submit"
+            disabled={loading}
+          />
+        </Box>
+
+        <Typography variant="body2" sx={{ mt: 2, textAlign: "center" }}>
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            underline="hover"
+            sx={{ cursor: "pointer", fontWeight: "bold" }}
+          >
+            Login
+          </Link>
+        </Typography>
       </form>
     </div>
   );

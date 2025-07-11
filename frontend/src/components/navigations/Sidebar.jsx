@@ -26,12 +26,12 @@ export default function Sidebar() {
   const tabs = [
     {
       name: "Create Book",
-      path: "/create-book",
+      path: "/book-form",
       icon: <InboxIcon />,
     },
     {
       name: "View Books",
-      path: "/view-books",
+      path: "/book-list",
       icon: <MailIcon />,
     },
   ];
@@ -53,7 +53,7 @@ export default function Sidebar() {
       >
         <Box sx={{ textAlign: "center", p: 2 }}>
           <Typography variant="h6" noWrap component="div">
-            Book Management System
+            Book Management
           </Typography>
         </Box>
         <Divider />

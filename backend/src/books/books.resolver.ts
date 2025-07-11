@@ -3,6 +3,8 @@ import { Book } from './entities/book.entity';
 import { BooksService } from './books.service';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CreateBookInput } from './dto/create-book.input';
+import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => Book)
 export class BooksResolver {
@@ -19,11 +21,13 @@ export class BooksResolver {
   }
 
   @Mutation(() => Book)
+  @UseGuards(GqlAuthGuard)
   createBook(@Args('createBookInput') createBookInput: CreateBookInput) {
     return this.booksService.create(createBookInput);
   }
 
   @Mutation(() => Book)
+  @UseGuards(GqlAuthGuard)
   updateBook(
     @Args('id') id: string,
     @Args('updateBookInput') updateBookInput: UpdateBookInput,

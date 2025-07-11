@@ -1,37 +1,65 @@
 "use client";
+
 import React, { useState } from "react";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box, Typography, Paper, Alert, CircularProgress } from "@mui/material";
 import CustomButton from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import styles from "../style.module.css";
 import Input from "@/components/ui/Input";
+import { LOGIN_USER } from "@/graphql/user/mutation";
+import { useMutation } from "@apollo/client";
+import Link from "next/link";
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
   const router = useRouter();
+
+  const [loginUser, { loading }] = useMutation(LOGIN_USER);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: null });
+    setServerError(null);
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = "Username is required.";
+    if (!formData.email) newErrors.email = "Email is required.";
     if (!formData.password) newErrors.password = "Password is required.";
     else if (formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters.";
-    return newErrors;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validate();
-    setErrors(newErrors);
+    if (validate()) {
+      try {
+        const { data } = await loginUser({
+          variables: {
+            createUserInput: {
+              email: formData.email,
+              password: formData.password,
+            },
+          },
+        });
 
-    if (Object.keys(newErrors).length === 0) {
-      console.log("Login success", formData);
-      router.push("/dashboard"); // or your home page
+        if (data.loginUser.token) {
+          sessionStorage.setItem("TKN", data.loginUser.token);
+        }
+        // navigate to book list page
+        router.push("/book-list");
+      } catch (error) {
+        console.error(error);
+        setServerError(
+          error?.graphQLErrors?.[0]?.message ||
+            "Something went wrong. Please try again."
+        );
+      }
     }
   };
 
@@ -42,13 +70,19 @@ export default function LoginForm() {
           Book Management Login
         </Typography>
 
+        {serverError && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            {serverError}
+          </Alert>
+        )}
+
         <Input
-          label="Username"
-          name="username"
-          value={formData.username}
+          label="Email"
+          name="email"
+          value={formData.email}
           onChange={handleChange}
-          error={Boolean(errors.username)}
-          helperText={errors.username}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
         />
 
         <Input
@@ -61,7 +95,26 @@ export default function LoginForm() {
           helperText={errors.password}
         />
 
-        <CustomButton name="Login" type="submit" onClick={handleSubmit} />
+        <Box sx={{ mt: 2 }}>
+          <CustomButton
+            name={
+              loading ? <CircularProgress size={20} color="inherit" /> : "Login"
+            }
+            type="submit"
+            disabled={loading}
+          />
+        </Box>
+
+        <Typography variant="body2" sx={{ mt: 2, textAlign: "center" }}>
+          Don't have an account?{" "}
+          <Link
+            href="/register"
+            underline="hover"
+            sx={{ cursor: "pointer", fontWeight: "bold" }}
+          >
+            Register
+          </Link>
+        </Typography>
       </form>
     </div>
   );

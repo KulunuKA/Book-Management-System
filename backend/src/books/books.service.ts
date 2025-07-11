@@ -38,4 +38,13 @@ export class BooksService {
     this.books.splice(index, 1);
     return true;
   }
+
+  search(searchTerm: string): Book[] {
+    return this.books.filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.genre.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }
 }

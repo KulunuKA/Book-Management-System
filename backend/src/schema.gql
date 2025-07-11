@@ -10,15 +10,29 @@ type Book {
   genre: String!
 }
 
+type User {
+  id: ID!
+  email: String!
+  password: String!
+}
+
+type AuthPayload {
+  user: User!
+  token: String!
+}
+
 type Query {
   books: [Book!]!
   book(id: String!): Book
+  searchBook(searchTerm: String!): [Book!]!
 }
 
 type Mutation {
   createBook(createBookInput: CreateBookInput!): Book!
   updateBook(id: String!, updateBookInput: UpdateBookInput!): Book!
   removeBook(id: String!): Boolean!
+  createUser(createUserInput: CreateUserInput!): AuthPayload!
+  loginUser(createUserInput: CreateUserInput!): AuthPayload!
 }
 
 input CreateBookInput {
@@ -34,4 +48,9 @@ input UpdateBookInput {
   publishedDate: String
   genre: String
   id: ID!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
 }

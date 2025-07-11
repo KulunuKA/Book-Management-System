@@ -35,4 +35,9 @@ export class BooksResolver {
   removeBook(@Args('id') id: string) {
     return this.booksService.remove(id);
   }
+
+  @Query(() => [Book])
+  searchBook(@Args('searchTerm') searchTerm: string) {
+    return this.booksService.search(searchTerm);
+  }
 }

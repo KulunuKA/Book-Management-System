@@ -15,9 +15,9 @@ This **Book Management System** allows users to manage book records, including c
 **Backend:**
 
 - Node.js
-- NestJS (or Express.js if applicable)
-- GraphQL (Apollo Server) or REST API
-- MongoDB / PostgreSQL / MySQL
+- NestJS 
+- GraphQL (Apollo Server) 
+- In memory storage
 
 ---
 

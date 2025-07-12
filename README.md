@@ -2,6 +2,25 @@
 
 This **Book Management System** allows users to manage book records, including creating, updating, viewing, and deleting books. It is built with a separate frontend and backend architecture.
 
+---
+
+## Tech Stack
+
+**Frontend:**
+
+- Next.js (React)
+- Apollo Client (for GraphQL queries/mutations)
+- Material UI (or Tailwind CSS / custom styling)
+
+**Backend:**
+
+- Node.js
+- NestJS (or Express.js if applicable)
+- GraphQL (Apollo Server) or REST API
+- MongoDB / PostgreSQL / MySQL
+
+---
+
 ## Features
 
 ✅ Add new books  
@@ -27,22 +46,17 @@ This **Book Management System** allows users to manage book records, including c
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/book-management-system.git
+git clone https://github.com/KulunuKA/Book-Management-System.git
 cd book-management-system
 
-Frontend
-    Install dependencies:
-    cd frontend
-    npm install
+Start Backend
 
-    Run the development server:
-    npm run dev
-```
+cd backend
+npm install
+npm run start:dev
 
-Backend
-    Install dependencies:
-    cd backend
-    npm install
+Start Frontend
 
-    Run the backend server:
-    npm run start:start
+cd frontend
+npm install
+npm run dev

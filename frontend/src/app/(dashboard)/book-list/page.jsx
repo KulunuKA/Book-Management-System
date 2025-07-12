@@ -50,13 +50,17 @@ export default function BooksPage() {
     },
   });
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   const {
     data: searchData,
     loading: searchLoading,
     error: searchError,
     refetch: searchRefetch,
   } = useQuery(SEARCH_BOOKS, {
-    variables: { searchTerm: "" },
+    variables: { searchTerm: searchInput },
     context: { headers: { Authorization: `Bearer ${token}` } },
   });
 
@@ -85,7 +89,6 @@ export default function BooksPage() {
     }
 
     try {
-      console.log(searchInput);
       const { data } = await searchRefetch({
         variables: { searchTerm: searchInput },
       });
